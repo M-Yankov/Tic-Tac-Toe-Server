@@ -110,12 +110,12 @@
         [AllowAnonymous]
         public IHttpActionResult All()
         {
-            // TODO: better logic;
+            // TODO: better logic and sort by date descending i.e. newest.
             var topTenGames = this.data.Games
                 .All()
                 .Take(10)
                 .ToList()
-                .Select(x => new
+                .Select(x => new ResponseGameModel
                 {
                     Board = x.Board,
                     Id = x.Id,
@@ -135,7 +135,6 @@
 
             return this.Ok(gamesOfTheUser);
         }
-
 
         [HttpGet]
         public IHttpActionResult Info()
