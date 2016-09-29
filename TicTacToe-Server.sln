@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{591D648E-CBEA-4096-9ADB-4B5797A16E3D}"
 EndProject
@@ -20,6 +20,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game", "Game", "{1C602FE4-324B-4E84-8231-A0A66118BB40}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToe.GameLogic", "TicTacToe.GameLogic\TicTacToe.GameLogic.csproj", "{7CF6B1C2-E1D4-4DB1-85FA-D1FE9C42A46E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{96053631-3AAC-47E6-9C45-4BB35E595419}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TicTacToe.Client", "Client\TicTacToe.Client\TicTacToe.Client.csproj", "{B0E011E6-FBE2-432A-A550-DA093805D0E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +51,10 @@ Global
 		{7CF6B1C2-E1D4-4DB1-85FA-D1FE9C42A46E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CF6B1C2-E1D4-4DB1-85FA-D1FE9C42A46E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CF6B1C2-E1D4-4DB1-85FA-D1FE9C42A46E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0E011E6-FBE2-432A-A550-DA093805D0E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0E011E6-FBE2-432A-A550-DA093805D0E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0E011E6-FBE2-432A-A550-DA093805D0E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0E011E6-FBE2-432A-A550-DA093805D0E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,5 +65,6 @@ Global
 		{8C41F13A-63B2-4954-89E3-509F331812FB} = {9C53B5E2-0E66-48B7-A7C9-489BB1A0ECE2}
 		{2121245D-5B86-4E4F-A94D-B16E45F8667C} = {27F03F92-6D65-4CA8-B847-2D5FB3F34F69}
 		{7CF6B1C2-E1D4-4DB1-85FA-D1FE9C42A46E} = {1C602FE4-324B-4E84-8231-A0A66118BB40}
+		{B0E011E6-FBE2-432A-A550-DA093805D0E6} = {96053631-3AAC-47E6-9C45-4BB35E595419}
 	EndGlobalSection
 EndGlobal
