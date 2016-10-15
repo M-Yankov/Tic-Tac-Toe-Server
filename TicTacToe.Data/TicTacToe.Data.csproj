@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultDbContext.cs" />
+    <Compile Include="IDatabaseContext.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />

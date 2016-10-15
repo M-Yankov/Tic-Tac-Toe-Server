@@ -20,33 +20,64 @@
             this.gameResultValidator = resultValidator;
         }
 
-        public Guid Add(string hostPlayerId)
+        public Guid Add(string hostPlayerId, string name, bool isPrivate, string password, GameChar startChar)
         {
-            var newGame = new Game { FirstPlayerId = hostPlayerId };
+            var newGame = new Game
+            {
+                FirstPlayerId = hostPlayerId,
+                IsPrivate = isPrivate,
+                Name = name,
+                Password = password,
+                DateCreated = DateTime.Now,
+                FirstPlayerSymbol = startChar
+            };
+
             this.dataSystem.Games.Add(newGame);
             this.dataSystem.Games.SaveChanges();
             return newGame.Id;
         }
 
-        public Game GetFirstGameAvailableForJoin(string currentUserId)
+        public JoinResultModel JoinGame(string currentUserId, string gameId, string password)
         {
+            JoinResultModel result = new JoinResultModel();
+           
             Game game = this.dataSystem.Games
                 .All()
-                .Where(g => g.State == GameState.WaitingForSecondPlayer && g.FirstPlayerId != currentUserId)
-                .FirstOrDefault();
+                .FirstOrDefault(g =>
+                    g.Id.ToString() == gameId &&
+                    g.State == GameState.WaitingForSecondPlayer &&
+                    g.FirstPlayerId != currentUserId);
 
             if (game == null)
             {
                 return null;
             }
 
-            // TODO: GameState Should be random !!!!! 
+            if (game.IsPrivate && game.Password != password)
+            {
+                result.IsSuccess = false;
+                result.ErrroMessage = "Wrong password";
+                return result;
+            }
+ 
             game.SecondPlayerId = currentUserId;
-            game.State = GameState.TurnX;
+
+            if (game.FirstPlayerSymbol == GameChar.O)
+            {
+                game.State = GameState.TurnO;
+                game.SecondPlayerSymbol = GameChar.X;
+            }
+            else
+            {
+                game.State = GameState.TurnX;
+                game.SecondPlayerSymbol = GameChar.O;
+            }
 
             this.dataSystem.SaveChanges();
 
-            return game;
+            result.IsSuccess = true;
+            result.GameId = game.Id;
+            return result;
         }
 
         public Game GetGameDetails(Guid idOfTheGame)
@@ -61,9 +92,9 @@
 
         public IQueryable<Game> GetGamesByUserId(string userId)
         {
-           return this.dataSystem.Games
-                .All()
-                .Where(g => g.FirstPlayerId == userId || g.SecondPlayerId == userId);
+            return this.dataSystem.Games
+                 .All()
+                 .Where(g => g.FirstPlayerId == userId || g.SecondPlayerId == userId);
         }
 
         public void Play(Game game, int positionIndex)
@@ -76,43 +107,26 @@
 
             game.State = game.State == GameState.TurnX ? GameState.TurnO : GameState.TurnX;
 
-            this.dataSystem.SaveChanges();
-
-            User firstUser = this.dataSystem.Users.GetById(game.FirstPlayerId);
-            User secondUser = this.dataSystem.Users.GetById(game.SecondPlayerId);
-
             GameResult gameResult = this.gameResultValidator.GetResult(game.Board);
 
-            // TODO try something else .
             switch (gameResult)
             {
                 case GameResult.NotFinished:
                     break;
                 case GameResult.WonByX:
                     game.State = GameState.WonByX;
-                    this.dataSystem.SaveChanges();
-                    firstUser.GamesWon++;
-                    secondUser.GamesLose++;
-                    this.dataSystem.SaveChanges();
                     break;
                 case GameResult.WonByO:
                     game.State = GameState.WonByO;
-                    this.dataSystem.SaveChanges();
-                    firstUser.GamesLose++;
-                    secondUser.GamesWon++;
-                    this.dataSystem.SaveChanges();
                     break;
                 case GameResult.Draw:
                     game.State = GameState.Draw;
-                    this.dataSystem.SaveChanges();
-
-                    firstUser.GamesDraw++;
-                    secondUser.GamesDraw++;
-                    this.dataSystem.SaveChanges();
                     break;
                 default:
                     break;
             }
+
+            this.dataSystem.SaveChanges();
         }
     }
 }

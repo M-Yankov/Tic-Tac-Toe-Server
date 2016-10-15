@@ -3,10 +3,14 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Web;
     using System.Web.Http;
     using AutoMapper;
     using AutoMapper.QueryableExtensions;
     using Microsoft.AspNet.Identity;
+    using Services;
     using TicTacToe.Data.Models;
     using TicTacToe.Services.Contracts;
     using TicTacToe.WebApi.Models.Games;
@@ -25,27 +29,50 @@
         }
 
         [HttpPost]
-        public IHttpActionResult Create()
+        public IHttpActionResult Create(CreateGameModel newGame)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return this.BadRequest(this.ModelState);
+            }
+
+            if (newGame.IsPrivate && string.IsNullOrEmpty(newGame.Password))
+            {
+                return this.BadRequest("Missing password!");
+            }
+
             var currentUserId = this.User.Identity.GetUserId();
-            var idOfTheCreatedGame = this.gameService.Add(currentUserId);
+            var idOfTheCreatedGame = this.gameService.Add(
+                currentUserId,
+                newGame.Name,
+                newGame.IsPrivate,
+                newGame.Password,
+                newGame.StartChar);
 
             return Ok(idOfTheCreatedGame);
         }
 
         [HttpPost]
-        public IHttpActionResult Join()
+        public IHttpActionResult Join(JoinModel joinModel)
         {
             var currentUserId = this.User.Identity.GetUserId();
 
-            Game game = this.gameService.GetFirstGameAvailableForJoin(currentUserId);
+            JoinResultModel joinResult = this.gameService.JoinGame(currentUserId, joinModel.GameId, joinModel.Password);
 
-            if (game == null)
+            if (joinResult == null)
             {
-                return NotFound();
+                var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+                response.Content = new StringContent("Game not found!");
+                return this.ResponseMessage(response);
             }
 
-            return Ok(game.Id);
+            if (!joinResult.IsSuccess)
+            {
+                return this.BadRequest(joinResult.ErrroMessage);
+            }
+
+            return Ok(joinResult.GameId);
+
         }
 
         [HttpGet]
@@ -106,14 +133,12 @@
             return this.Ok(responseUser);
         }
 
-        /// <param name="row">1,2 or 3</param>
-        /// <param name="col">1,2 or 3</param>
         [HttpPost]
         public IHttpActionResult Play(PlayRequestDataModel request)
         {
-            if (request == null || !ModelState.IsValid)
+            if (request == null || !this.ModelState.IsValid)
             {
-                return this.BadRequest(ModelState);
+                return this.BadRequest(this.ModelState);
             }
 
             var currentUserId = this.User.Identity.GetUserId();
@@ -137,11 +162,11 @@
                 return this.BadRequest("Invalid game state!");
             }
 
-            if ((game.State == GameState.TurnX &&
-                game.FirstPlayerId != currentUserId)
-                ||
-                (game.State == GameState.TurnO &&
-                game.SecondPlayerId != currentUserId))
+            GameChar nextCharTurn = game.State == GameState.TurnX ? GameChar.X : GameChar.O;
+            string nextTurnPlayerId = game.FirstPlayerSymbol == nextCharTurn ? game.FirstPlayerId : game.SecondPlayerId;
+
+            if ((game.FirstPlayerId == currentUserId && game.FirstPlayerSymbol != nextCharTurn) ||
+                (game.SecondPlayerId == currentUserId && game.SecondPlayerSymbol != nextCharTurn))
             {
                 return this.BadRequest("It's not your turn!");
             }

@@ -6,15 +6,14 @@
     using TicTacToe.Data.Models;
     using TicTacToe.Data.Repositories;
 
-    // TODO: Rename this. Unit Of Work
     public class UnitSystem : IUnitSystem
     {
         private readonly DbContext context;
         private readonly IDictionary<Type, object> respositories;
 
-        public UnitSystem(DbContext bullsAndCowsContext)
+        public UnitSystem(DbContext ticTacToeContext)
         {
-            this.context = bullsAndCowsContext;
+            this.context = ticTacToeContext;
             this.respositories = new Dictionary<Type, object>();
         }
 

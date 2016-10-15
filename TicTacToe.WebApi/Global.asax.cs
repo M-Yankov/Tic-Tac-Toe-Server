@@ -1,15 +1,14 @@
 ﻿namespace TicTacToe.WebApi
 {
-    using System;
-    using System.Linq;
     using System.Web;
     using System.Web.Http;
+    using Data;
 
     public class WebApiApplication : HttpApplication
     {
         protected void Application_Start()
         {
-            DatabaseConfig.Initialize();
+            DatabaseConfig.Initialize(DefaultDbContext.Create());
             AutoMapperConfig.RegisterMappings("TicTacToe.WebApi");
             GlobalConfiguration.Configure(WebApiConfig.Register);
         }

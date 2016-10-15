@@ -6,9 +6,10 @@
 
     public class DatabaseConfig
     {
-        public static void Initialize()
+        public static void Initialize(IDatabaseContext context)
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DefaultDbContext, Configuration>());
+            context.Database.Initialize(true);
         }
     }
 }
