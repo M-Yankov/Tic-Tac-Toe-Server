@@ -1,8 +1,7 @@
 ﻿namespace TicTacToe.WebApi.Controllers
 {
-    using System;
-    using System.Diagnostics;
-    using System.Threading;
+    using System.Linq;
+    using System.Web;
     using System.Web.Http;
     using Services.Contracts;
 
@@ -18,16 +17,17 @@
         [HttpGet]
         public IHttpActionResult Index()
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
+            this.gameService.GetNewestGames(1).ToList();
 
-            this.gameService.GetNewestGames(1);
-            TimeSpan elapsed = stopWatch.Elapsed;
+            object elapsed = HttpContext.Current.Application["elapsed"];
+            string response = "Welcome";
 
-            stopWatch.Stop();
-            string result = elapsed.ToString();
+            if (elapsed != null)
+            {
+                response = elapsed.ToString();
+            }
 
-            return this.Ok(result);
+            return this.Ok(response);
         }
     }
 }

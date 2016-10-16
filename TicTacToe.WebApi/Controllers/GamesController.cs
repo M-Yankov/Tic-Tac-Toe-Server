@@ -53,11 +53,11 @@
         }
 
         [HttpPost]
-        public IHttpActionResult Join(JoinModel joinModel)
+        public IHttpActionResult Join(string id, JoinModel model)
         {
             var currentUserId = this.User.Identity.GetUserId();
 
-            JoinResultModel joinResult = this.gameService.JoinGame(currentUserId, joinModel.GameId, joinModel.Password);
+            JoinResultModel joinResult = this.gameService.JoinGame(currentUserId, id, model.Password);
 
             if (joinResult == null)
             {
