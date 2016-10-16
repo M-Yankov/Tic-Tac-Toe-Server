@@ -25,7 +25,7 @@
             TimeSpan elapsed = stopWatch.Elapsed;
 
             stopWatch.Stop();
-            string result = string.Format("{0}:{1}", elapsed.TotalMinutes, elapsed.TotalSeconds);
+            string result = elapsed.ToString();
 
             return this.Ok(result);
         }
