@@ -6,9 +6,9 @@
 
     public interface IGameService
     {
-        Guid Add(string hostPlayerId);
+        Guid Add(string hostPlayerId, string name, bool isPrivate, string password, GameChar startChar);
 
-        Game GetFirstGameAvailableForJoin(string currentUserId);
+        JoinResultModel JoinGame(string currentUserId, string gameId, string password);
 
         Game GetGameDetails(Guid idOfTheGame);
 

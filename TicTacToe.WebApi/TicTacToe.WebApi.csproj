@@ -203,6 +203,8 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\GamesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\Games\CreateGameModel.cs" />
+    <Compile Include="Models\Games\JoinModel.cs" />
     <Compile Include="Models\Games\PlayRequestDataModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
