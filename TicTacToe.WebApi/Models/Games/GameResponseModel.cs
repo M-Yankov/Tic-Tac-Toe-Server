@@ -9,9 +9,13 @@
     {
         public Guid Id { get; set; }
 
+        public string Name { get; set; }
+
         public string Board { get; set; }
 
         public GameState State { get; set; }
+
+        public DateTime DateCreated { get; set; }
 
         public string FirstPlayerName { get; set; }
 

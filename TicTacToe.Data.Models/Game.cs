@@ -18,6 +18,7 @@
         public DateTime DateCreated { get; set; }
 
         [Required]
+        [Index(IsUnique = true)]
         [StringLength(DataModelConstants.MaxLengthName, MinimumLength = DataModelConstants.MinLengthName)]
         public string Name { get; set; }
 

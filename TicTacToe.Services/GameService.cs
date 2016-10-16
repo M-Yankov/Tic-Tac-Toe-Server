@@ -85,9 +85,9 @@
             return this.dataSystem.Games.GetById(idOfTheGame);
         }
 
-        public IQueryable<Game> GetNewestGames(int countToTake)
+        public IQueryable<Game> All()
         {
-            return this.dataSystem.Games.All().Take(countToTake);
+            return this.dataSystem.Games.All();
         }
 
         public IQueryable<Game> GetGamesByUserId(string userId)

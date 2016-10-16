@@ -5,10 +5,10 @@
     using System.Linq;
     using System.Net;
     using System.Net.Http;
-    using System.Web;
     using System.Web.Http;
     using AutoMapper;
     using AutoMapper.QueryableExtensions;
+    using Constants;
     using Microsoft.AspNet.Identity;
     using Services;
     using TicTacToe.Data.Models;
@@ -41,8 +41,14 @@
                 return this.BadRequest("Missing password!");
             }
 
-            var currentUserId = this.User.Identity.GetUserId();
-            var idOfTheCreatedGame = this.gameService.Add(
+            bool isGameExists = this.gameService.All().Any(g => g.Name.ToLower() == newGame.Name.ToLower());
+            if (isGameExists)
+            {
+                return this.BadRequest("Game already exists! Try different name.");
+            }
+
+            string currentUserId = this.User.Identity.GetUserId();
+            Guid idOfTheCreatedGame = this.gameService.Add(
                 currentUserId,
                 newGame.Name,
                 newGame.IsPrivate,
@@ -100,19 +106,42 @@
 
         [HttpGet]
         [AllowAnonymous]
-        public IHttpActionResult All()
+        public IHttpActionResult All(
+            GameState state = GameState.Invalid, 
+            string playerName = "",
+            string gameName = "",
+            int count = WebApiConstants.DefaultCountOfGamesToShow)
         {
-            // TODO: better logic and sort by date descending i.e. newest.
-            var topGames = this.gameService.GetNewestGames(10).ProjectTo<GameResponseModel>().ToList();
-            return this.Ok(topGames);
+            gameName = gameName.ToLower();
+            playerName = playerName.ToLower();
+
+            IQueryable<Game> topGames = this.gameService
+                            .All()
+                            .Where(g => g.Name.ToLower().Contains(gameName) &&
+                                        (g.FirstPlayer.UserName.ToLower().Contains(playerName) ||
+                                            (g.State != 0 && g.SecondPlayer.UserName.ToLower().Contains(playerName))));
+
+            if (state != GameState.Invalid)
+            {
+               topGames = topGames.Where(g => g.State == state);
+            }
+
+            IEnumerable<GameResponseModel> responseGames = topGames.OrderByDescending(g => g.DateCreated)
+                                                                .Take(count)
+                                                                .ProjectTo<GameResponseModel>().ToList();
+
+            return this.Ok(responseGames);
         }
 
         [HttpGet]
         public IHttpActionResult PrivateGames()
         {
-            var currentUserId = this.User.Identity.GetUserId();
+            string currentUserId = this.User.Identity.GetUserId();
 
-            var gamesOfTheUser = this.gameService.GetGamesByUserId(currentUserId).ProjectTo<GameResponseModel>().ToList();
+            IEnumerable<GameResponseModel> gamesOfTheUser = this.gameService
+                                                                .GetGamesByUserId(currentUserId)
+                                                                .ProjectTo<GameResponseModel>()
+                                                                .ToList();
 
             return this.Ok(gamesOfTheUser);
         }
