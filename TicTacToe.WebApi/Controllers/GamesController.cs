@@ -84,9 +84,7 @@
         [HttpGet]
         public IHttpActionResult Status(string gameId)
         {
-            string currentUserId = this.User.Identity.GetUserId();
             var idAsGuid = new Guid(gameId);
-
             Game game = this.gameService.GetGameDetails(idAsGuid);
 
             if (game == null)
@@ -94,6 +92,7 @@
                 return this.NotFound();
             }
 
+            string currentUserId = this.User.Identity.GetUserId();
             if (game.FirstPlayerId != currentUserId &&
                 game.SecondPlayerId != currentUserId)
             {
@@ -107,7 +106,7 @@
         [HttpGet]
         [AllowAnonymous]
         public IHttpActionResult All(
-            GameState state = GameState.Invalid, 
+            GameState state = GameState.Invalid,
             string playerName = "",
             string gameName = "",
             int count = WebApiConstants.DefaultCountOfGamesToShow)
@@ -115,18 +114,19 @@
             gameName = gameName.ToLower();
             playerName = playerName.ToLower();
 
-            IQueryable<Game> topGames = this.gameService
+            IQueryable<Game> publicGames = this.gameService
                             .All()
-                            .Where(g => g.Name.ToLower().Contains(gameName) &&
+                            .Where(g => g.IsPrivate == false &&
+                                        g.Name.ToLower().Contains(gameName) &&
                                         (g.FirstPlayer.UserName.ToLower().Contains(playerName) ||
-                                            (g.State != 0 && g.SecondPlayer.UserName.ToLower().Contains(playerName))));
+                                        (g.State != 0 && g.SecondPlayer.UserName.ToLower().Contains(playerName))));
 
             if (state != GameState.Invalid)
             {
-               topGames = topGames.Where(g => g.State == state);
+                publicGames = publicGames.Where(g => g.State == state);
             }
 
-            IEnumerable<GameResponseModel> responseGames = topGames.OrderByDescending(g => g.DateCreated)
+            IEnumerable<GameResponseModel> responseGames = publicGames.OrderByDescending(g => g.DateCreated)
                                                                 .Take(count)
                                                                 .ProjectTo<GameResponseModel>().ToList();
 
