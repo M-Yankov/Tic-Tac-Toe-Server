@@ -26,7 +26,7 @@
                          .ForMember(x => x.Username, opts => opts.MapFrom(z => z.UserName))
                          .ForMember(x => x.TotalGames, opts => opts.MapFrom(u => u.CreatedGames.Count + u.JoinedGames.Count))
                          .ForMember(x => x.GamesDraw, 
-                                    opts => opts.MapFrom(u => u.CreatedGames.Where(g => g.State == GameState.Draw).Count() +                                          u.JoinedGames.Where(g => g.State == GameState.Draw).Count()))
+                                    opts => opts.MapFrom(u => u.CreatedGames.Where(g => g.State == GameState.Draw).Count() + u.JoinedGames.Where(g => g.State == GameState.Draw).Count()))
                          .ForMember(x => x.GamesWon,
                                     opts => opts.MapFrom(u => 
                                         u.CreatedGames.Where(g => g.FirstPlayerId == u.Id &&
