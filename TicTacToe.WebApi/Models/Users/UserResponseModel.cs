@@ -29,20 +29,12 @@
                                     opts => opts.MapFrom(u => u.CreatedGames.Where(g => g.State == GameState.Draw).Count() + u.JoinedGames.Where(g => g.State == GameState.Draw).Count()))
                          .ForMember(x => x.GamesWon,
                                     opts => opts.MapFrom(u => 
-                                        u.CreatedGames.Where(g => g.FirstPlayerId == u.Id &&
-                                                                    g.FirstPlayerSymbol == GameChar.O &&
-                                                                    g.State == GameState.WonByO).Count() + 
-                                        u.JoinedGames.Where(g => g.SecondPlayerId == u.Id && 
-                                                                    g.SecondPlayerSymbol == GameChar.X &&
-                                                                    g.State == GameState.WonByX).Count()))
+                                        u.CreatedGames.Where(g => g.WonById == u.Id).Count() + 
+                                        u.JoinedGames.Where(g => g.WonById == u.Id).Count()))
                          .ForMember(x => x.GamesLose,
                                     opts => opts.MapFrom(u =>
-                                    u.CreatedGames.Where(g => g.FirstPlayerId == u.Id &&
-                                                                g.FirstPlayerSymbol == GameChar.O &&
-                                                                g.State == GameState.WonByX).Count() +
-                                    u.JoinedGames.Where(g => g.SecondPlayerId == u.Id &&
-                                                                g.SecondPlayerSymbol == GameChar.X &&                          
-                                                                g.State == GameState.WonByO).Count()));
+                                    u.CreatedGames.Where(g => !string.IsNullOrEmpty(g.WonById) && g.WonById != u.Id).Count() +
+                                    u.JoinedGames.Where(g => !string.IsNullOrEmpty(g.WonById) && g.WonById != u.Id).Count()));
         }
     }
 }

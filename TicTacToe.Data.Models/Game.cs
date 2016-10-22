@@ -47,5 +47,9 @@
         public virtual User SecondPlayer { get; set; }
 
         public GameChar? SecondPlayerSymbol { get; set; }
+
+        public string WonById { get; set; }
+
+        public virtual User WonBy { get; set; }
     }
 }

@@ -82,11 +82,16 @@
         }
 
         [HttpGet]
-        public IHttpActionResult Status(string gameId)
+        public IHttpActionResult Status(string gameId, bool isForJoin = false)
         {
-            var idAsGuid = new Guid(gameId);
-            Game game = this.gameService.GetGameDetails(idAsGuid);
+            Guid idOfTheGame = Guid.Empty;
 
+            if (!Guid.TryParse(gameId, out idOfTheGame))
+            {
+                return this.NotFound();
+            }
+
+            Game game = this.gameService.GetGameDetails(idOfTheGame);
             if (game == null)
             {
                 return this.NotFound();
@@ -96,7 +101,10 @@
             if (game.FirstPlayerId != currentUserId &&
                 game.SecondPlayerId != currentUserId)
             {
-                return this.BadRequest("This is not your game!");
+                if (!isForJoin)
+                {
+                    return this.BadRequest("This is not your game!");
+                }
             }
 
             GameResponseModel gameInfo = Mapper.Map<GameResponseModel>(game);
