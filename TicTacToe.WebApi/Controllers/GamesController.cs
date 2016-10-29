@@ -114,11 +114,22 @@
         [HttpGet]
         [AllowAnonymous]
         public IHttpActionResult All(
-            GameState state = GameState.Invalid,
             string playerName = "",
             string gameName = "",
-            int count = WebApiConstants.DefaultCountOfGamesToShow)
+            GameState state = GameState.Invalid,
+            int count = WebApiConstants.DefaultCountOfGamesToShow,
+            OrderSelector order = OrderSelector.DateCreated)
         {
+            if (string.IsNullOrEmpty(gameName))
+            {
+                gameName = "";
+            }
+
+            if (string.IsNullOrEmpty(playerName))
+            {
+                playerName = "";
+            }
+
             gameName = gameName.ToLower();
             playerName = playerName.ToLower();
 
@@ -134,20 +145,76 @@
                 publicGames = publicGames.Where(g => g.State == state);
             }
 
-            IEnumerable<GameResponseModel> responseGames = publicGames.OrderByDescending(g => g.DateCreated)
+            switch (order)
+            {
+                case OrderSelector.GameName:
+                    publicGames = publicGames.OrderBy(g => g.Name);
+                    break;
+                case OrderSelector.State:
+                    publicGames = publicGames.OrderBy(g => g.State);
+                    break;
+                default:
+                    publicGames = publicGames.OrderByDescending(g => g.DateCreated);
+                    break;
+            }
+
+            IEnumerable<GameResponseModel> responseGames = publicGames
                                                                 .Take(count)
-                                                                .ProjectTo<GameResponseModel>().ToList();
+                                                                .ProjectTo<GameResponseModel>()
+                                                                .ToList();
 
             return this.Ok(responseGames);
         }
 
         [HttpGet]
-        public IHttpActionResult PrivateGames()
+        public IHttpActionResult PrivateGames(
+            string playerName = "",
+            string gameName = "",
+            GameState state = GameState.Invalid,
+            int count = WebApiConstants.DefaultCountOfGamesToShow,
+            OrderSelector order = OrderSelector.DateCreated)
         {
             string currentUserId = this.User.Identity.GetUserId();
 
-            IEnumerable<GameResponseModel> gamesOfTheUser = this.gameService
-                                                                .GetGamesByUserId(currentUserId)
+            if (string.IsNullOrEmpty(gameName))
+            {
+                gameName = "";
+            }
+
+            if (string.IsNullOrEmpty(playerName))
+            {
+                playerName = "";
+            }
+
+            gameName = gameName.ToLower();
+            playerName = playerName.ToLower();
+
+            IQueryable<Game> gamesForUser = this.gameService.GetGamesByUserId(currentUserId)
+                         .Where(g => g.Name.ToLower().Contains(gameName) &&
+                                     (g.FirstPlayer.UserName.ToLower().Contains(playerName) ||
+                                     (g.State != 0 && g.SecondPlayer.UserName.ToLower().Contains(playerName))));
+
+            if (state != GameState.Invalid)
+            {
+                gamesForUser = gamesForUser.Where(g => g.State == state);
+            }
+
+            switch (order)
+            {
+                case OrderSelector.GameName:
+                    gamesForUser = gamesForUser.OrderBy(g => g.Name);
+                    break;
+                case OrderSelector.State:
+                    gamesForUser = gamesForUser.OrderBy(g => g.State);
+                    break;
+                default:
+                    gamesForUser = gamesForUser.OrderByDescending(g => g.DateCreated);
+                    break;
+            }
+
+
+            IEnumerable<GameResponseModel> gamesOfTheUser = gamesForUser
+                                                                .Take(count)
                                                                 .ProjectTo<GameResponseModel>()
                                                                 .ToList();
 
