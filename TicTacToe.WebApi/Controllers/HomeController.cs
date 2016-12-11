@@ -1,10 +1,10 @@
 ﻿namespace TicTacToe.WebApi.Controllers
 {
-    using System;
-    using System.Diagnostics;
-    using System.Threading;
+    using System.Linq;
+    using System.Web;
     using System.Web.Http;
     using Services.Contracts;
+    using Constants;
 
     public class HomeController : ApiController
     {
@@ -18,16 +18,7 @@
         [HttpGet]
         public IHttpActionResult Index()
         {
-            Stopwatch stopWatch = new Stopwatch();
-            stopWatch.Start();
-
-            this.gameService.GetNewestGames(1);
-            TimeSpan elapsed = stopWatch.Elapsed;
-
-            stopWatch.Stop();
-            string result = elapsed.ToString();
-
-            return this.Ok(result);
+            return this.Ok(WebApiConstants.WelcomeMessage);
         }
     }
 }

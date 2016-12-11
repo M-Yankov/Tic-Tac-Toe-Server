@@ -7,6 +7,7 @@
         TurnO = 2,
         WonByX = 3,
         WonByO = 4,
-        Draw = 5
+        Draw = 5,
+        Invalid = 99
     }
 }

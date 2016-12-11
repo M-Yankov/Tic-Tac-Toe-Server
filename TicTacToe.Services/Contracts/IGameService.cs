@@ -12,7 +12,7 @@
 
         Game GetGameDetails(Guid idOfTheGame);
 
-        IQueryable<Game> GetNewestGames(int countToTake);
+        IQueryable<Game> All();
 
         IQueryable<Game> GetGamesByUserId(string userId);
 

@@ -85,9 +85,9 @@
             return this.dataSystem.Games.GetById(idOfTheGame);
         }
 
-        public IQueryable<Game> GetNewestGames(int countToTake)
+        public IQueryable<Game> All()
         {
-            return this.dataSystem.Games.All().Take(countToTake);
+            return this.dataSystem.Games.All();
         }
 
         public IQueryable<Game> GetGamesByUserId(string userId)
@@ -115,8 +115,10 @@
                     break;
                 case GameResult.WonByX:
                     game.State = GameState.WonByX;
+                    game.WonById = game.FirstPlayerSymbol == GameChar.X ? game.FirstPlayerId : game.SecondPlayerId;
                     break;
                 case GameResult.WonByO:
+                    game.WonById = game.FirstPlayerSymbol == GameChar.O ? game.FirstPlayerId : game.SecondPlayerId;
                     game.State = GameState.WonByO;
                     break;
                 case GameResult.Draw:
