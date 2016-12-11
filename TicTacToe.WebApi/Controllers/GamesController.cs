@@ -21,6 +21,7 @@
     {
         private readonly IGameService gameService;
         private readonly IUserService userService;
+        private const string StringEmpty = "";
 
         public GamesController(IGameService gameService, IUserService userService)
         {
@@ -114,20 +115,20 @@
         [HttpGet]
         [AllowAnonymous]
         public IHttpActionResult All(
-            string playerName = "",
-            string gameName = "",
+            string playerName = StringEmpty,
+            string gameName = StringEmpty,
             GameState state = GameState.Invalid,
             int count = WebApiConstants.DefaultCountOfGamesToShow,
             OrderSelector order = OrderSelector.DateCreated)
         {
             if (string.IsNullOrEmpty(gameName))
             {
-                gameName = "";
+                gameName = StringEmpty;
             }
 
             if (string.IsNullOrEmpty(playerName))
             {
-                playerName = "";
+                playerName = StringEmpty;
             }
 
             gameName = gameName.ToLower();
@@ -168,8 +169,8 @@
 
         [HttpGet]
         public IHttpActionResult PrivateGames(
-            string playerName = "",
-            string gameName = "",
+            string playerName = StringEmpty,
+            string gameName = StringEmpty,
             GameState state = GameState.Invalid,
             int count = WebApiConstants.DefaultCountOfGamesToShow,
             OrderSelector order = OrderSelector.DateCreated)
@@ -178,12 +179,12 @@
 
             if (string.IsNullOrEmpty(gameName))
             {
-                gameName = "";
+                gameName = StringEmpty;
             }
 
             if (string.IsNullOrEmpty(playerName))
             {
-                playerName = "";
+                playerName = StringEmpty;
             }
 
             gameName = gameName.ToLower();

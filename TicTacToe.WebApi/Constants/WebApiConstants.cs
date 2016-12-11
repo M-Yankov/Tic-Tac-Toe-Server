@@ -2,8 +2,7 @@
 {
     public class WebApiConstants
     {
-        public const int DefaultCountOfGamesToShow = 10;
+        public const int DefaultCountOfGamesToShow = 50;
         public const string WelcomeMessage = "Welcome";
-
     }
 }
